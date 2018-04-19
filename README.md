@@ -115,6 +115,25 @@ echo "Decode:\n" . print_r($decoded_array, true) . "\n";
 ?>
 ```
 
+```
+ public static function refresh($token) {
+         try{
+             $decoded = JWT::decode($token, JWT_SECRET, ['HS256']);
+             //TODO: do something if exception is not fired
+         }catch ( \Firebase\JWT\ExpiredException $e ) {
+             JWT::$leeway = 720000;
+             $decoded = (array) JWT::decode($token, JWT_SECRET, ['HS256']);
+             // TODO: test if token is blacklisted
+             $decoded['iat'] = time();
+             $decoded['exp'] = time() + self::$offset;
+
+             return JWT::encode($decoded, JWT_SECRET);
+         }catch ( \Exception $e ){
+             var_dump($e);
+         }
+     }
+```
+
 Changelog
 ---------
 
